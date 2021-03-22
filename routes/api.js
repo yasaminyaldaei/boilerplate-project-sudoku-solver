@@ -21,7 +21,30 @@ module.exports = function(app) {
       if (notValidPuzzle.test(puzzle)) return res.json({ "error": "Invalid characters in puzzle" })
       if (puzzle.length !== 81) return res.json({ "error": "Expected puzzle to be 81 characters long" })
       if (notValidCoordinate.test(coordinate)) return res.json({ "error": "Invalid coordinate" })
-      if (notValidValue.test(value)) return res.json({ "error": "Invalid value" })      
+      if (notValidValue.test(value)) return res.json({ "error": "Invalid value" }) 
+      const conflict = [];
+      const isRowValid = solver.checkRowPlacement(puzzle, coordinate[0], coordinate[1], value);
+      if (!isRowValid) {
+        conflict.push("row")
+      }
+      const isColValid = solver.checkColPlacement(puzzle, coordinate[0], coordinate[1], value);
+      if (!isColValid) {
+        conflict.push("column")
+      }
+      const isRegValid = solver.checkRegionPlacement(puzzle, coordinate[0], coordinate[1], value);
+      if (!isRegValid) {
+        conflict.push("region")
+      }
+      const isValid = isRowValid && isColValid && isRegValid;
+
+
+      return isValid ? res.json({
+        "valid": isValid,
+      }) :
+      res.json({
+        "valid": isValid,
+        "conflict": conflict
+      })   
     });
 
   app.route('/api/solve')

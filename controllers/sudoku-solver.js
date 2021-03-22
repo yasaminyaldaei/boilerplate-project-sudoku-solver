@@ -22,9 +22,9 @@ class SudokuSolver {
   }
 
   checkRowPlacement(puzzleString, row, column, value) {
-    const rowIndex = row.charCodeAt(0) - 97;
+    const rowIndex = row.toLowerCase().charCodeAt(0) - 97;
     const rowIndexes = this.rowIndexesGenerator(rowIndex);
-    return rowIndexes.findIndex(index => puzzleString.charAt(index) == value)
+    return rowIndexes.findIndex(index => puzzleString.charAt(index) == value) === -1;
   }
 
   colIndexesGenerator(col) {
@@ -32,21 +32,21 @@ class SudokuSolver {
   }
 
   checkColPlacement(puzzleString, row, column, value) {
-    const colIndexes = this.colIndexesGenerator(column);
-    return colIndexes.findIndex((index) => puzzleString.charAt(index) == value);
+    const colIndexes = this.colIndexesGenerator(+column);
+    return colIndexes.findIndex((index) => puzzleString.charAt(index) == value) === -1;
   }
 
   regionIndexesGenerator(row, col) {
-    const regionConstant = REGION_HELPER[`[${row / 3},${col / 3}]`];
+    const regionConstant = REGION_HELPER[`[${parseInt(row / 3)},${parseInt(col / 3)}]`];
     return INDEX_HELPER.map(
       (_, index) => (index % 3) + 3 * regionConstant + 9 * parseInt(index / 3)
     );
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
-    const rowIndex = row.charCodeAt(0) - 97;
+    const rowIndex = row.toLowerCase().charCodeAt(0) - 97;
     const regionIndexes = this.regionIndexesGenerator(rowIndex, column)
-    return regionIndexes.findIndex((index) => puzzleString.charAt(index) == value)
+    return regionIndexes.findIndex((index) => puzzleString.charAt(index) == value) === -1
   }
 
   solve(puzzleString) {
