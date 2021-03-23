@@ -23,6 +23,12 @@ module.exports = function(app) {
       if (notValidCoordinate.test(coordinate)) return res.json({ "error": "Invalid coordinate" })
       if (notValidValue.test(value)) return res.json({ "error": "Invalid value" }) 
       const conflict = [];
+      const isInCell = solver.checkCellPlacement(puzzle, coordinate[0], coordinate[1], value)
+      if (isInCell) {
+        return res.json({
+        "valid": isInCell,
+      })
+      }
       const isRowValid = solver.checkRowPlacement(puzzle, coordinate[0], coordinate[1], value);
       if (!isRowValid) {
         conflict.push("row")
@@ -53,5 +59,10 @@ module.exports = function(app) {
       if (!puzzle) return res.json({ "error": "Required field missing" })
       if (notValidPuzzle.test(puzzle)) return res.json({ "error": "Invalid characters in puzzle" })
       if (puzzle.length !== 81) return res.json({ "error": "Expected puzzle to be 81 characters long" })
+
+      const solution = solver.solve(puzzle);
+      return res.json({
+        solution
+      })
     });
 };

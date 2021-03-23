@@ -17,6 +17,15 @@ class SudokuSolver {
   validate(puzzleString) {
   }
 
+  checkCellPlacement(puzzleString, row, column, value) {
+    const rowIndex = row.toLowerCase().charCodeAt(0) - 97;
+    const colIndex = +column - 1;
+
+    const cellIndex = 9 * rowIndex + colIndex;
+
+    return puzzleString[cellIndex] == value;
+  }
+
   rowIndexesGenerator(row) {
     return INDEX_HELPER.map((_, index) => (LENGTH * row) + index)
   }
@@ -32,7 +41,7 @@ class SudokuSolver {
   }
 
   checkColPlacement(puzzleString, row, column, value) {
-    const colIndexes = this.colIndexesGenerator(+column);
+    const colIndexes = this.colIndexesGenerator(+column - 1)
     return colIndexes.findIndex((index) => puzzleString.charAt(index) == value) === -1;
   }
 
@@ -45,12 +54,34 @@ class SudokuSolver {
 
   checkRegionPlacement(puzzleString, row, column, value) {
     const rowIndex = row.toLowerCase().charCodeAt(0) - 97;
-    const regionIndexes = this.regionIndexesGenerator(rowIndex, column)
+    const regionIndexes = this.regionIndexesGenerator(rowIndex, +column - 1)
     return regionIndexes.findIndex((index) => puzzleString.charAt(index) == value) === -1
   }
 
   solve(puzzleString) {
+    const puzzleArray = puzzleString.split("")
+    let solution = []
 
+    for (let i = 0; i < puzzleArray.length; i++) {
+      if (puzzleArray[i] === '.') {
+        for (let j = 1; j <= 9; j++) {
+          const coordinate = String.fromCharCode(65 + parseInt(i / 9)) + (parseInt(i % 9) + 1)
+
+          const isRowValid = this.checkRowPlacement(puzzleString, coordinate[0], coordinate[1], j);
+          const isColValid = this.checkColPlacement(puzzleString, coordinate[0], coordinate[1], j);
+          const isRegValid = this.checkRegionPlacement(puzzleString, coordinate[0], coordinate[1], j);
+
+          if (isRegValid && isColValid && isRowValid) {
+            solution[i] = j
+            break;
+          }
+        }
+      } else {
+        solution[i] = puzzleArray[i]
+      }
+    }
+
+    return solution.join("")
   }
 }
 
