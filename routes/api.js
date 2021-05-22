@@ -61,8 +61,10 @@ module.exports = function(app) {
       if (puzzle.length !== 81) return res.json({ "error": "Expected puzzle to be 81 characters long" })
 
       const solution = solver.solve(puzzle);
-      return res.json({
+      return solution.length !== 0 ? res.json({
         solution
-      })
+      }) : res.json({
+        "error": "Puzzle cannot be solved"
+      });
     });
 };
